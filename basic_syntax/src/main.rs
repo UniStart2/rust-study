@@ -1,10 +1,12 @@
-mod enum_study;
-mod struct_study;
 mod borrow;
+mod enum_study;
+mod ownership;
+mod struct_study;
 
-use enum_study::Message;
-use struct_study::*;
 use borrow::*;
+use enum_study::Message;
+use ownership::*;
+use struct_study::*;
 
 fn main() {
     let name = String::from("Mike");
@@ -40,7 +42,11 @@ fn main() {
     let op1 = Some(5);
     let op2: Option<i32> = None;
     let basicNum = 1;
-    
+
     println!("================== test borrow ====================");
     testBorrowSyntax();
+    test_practice();
+
+    println!("================== test rc (DAG) =========================");
+    test_dag();
 }

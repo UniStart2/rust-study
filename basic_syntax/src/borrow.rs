@@ -22,7 +22,6 @@ fn sum(data: &Vec<u32>) -> u32 {
     data.iter().fold(0, |acc, x| acc + x)
 }
 
-
 //  借用的生命周期及其约束（借用不能超过值的生命周期）
 // fn testlifetime() {
 //     // error: 生命周期更长的main()函数变量r，
@@ -36,7 +35,6 @@ fn sum(data: &Vec<u32>) -> u32 {
 //     &a
 // }
 
-
 fn testHeapRefStack() {
     let mut data: Vec<&u32> = Vec::new();
     let v = 42;
@@ -48,3 +46,11 @@ fn testHeapRefStack() {
 // 在一个作用域内，仅允许一个活跃的可变引用。所谓活跃，就是真正被使用来修改数据的可变引用，
 //  如果只是定义了，却没有使用或者当作只读引用使用，不算活跃。
 // 在一个作用域内，活跃的可变引用（写）和只读引用（读）是互斥的，不能同时存在。
+pub fn test_practice() {
+    let mut arr = vec![1, 2, 3];
+    // cache the last item
+    let last = arr.last();
+    // consume previously stored last item
+    println!("last: {:?}", last);
+    arr.push(4);
+}
