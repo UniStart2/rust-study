@@ -9,10 +9,12 @@ mod VecTest {
         _v1.push(2);
         _v1.push(3);
 
+        println!("{:?}", _v1.get(0));
+
         println!("_v2: {:?}", _v2);
 
-        for i in &mut _v1 {
-            *i += 100;
+        for i in _v1 {
+            // *i += 100;
             println!("{:?}", i);
         }
     }
