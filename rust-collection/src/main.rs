@@ -1,3 +1,37 @@
+mod StringTest {
+
+    // Rust核心语言层面，只有一个字符串类型：字符串切片(&str)
+    // 字符串字面值也是字符串切片
+    pub fn test_str() {
+        let str = "Hello, Rust";
+        println!("{:?}", str);
+    }
+
+    // String类型来自标准库
+    pub fn test_string() {
+        let mut s1: String = "constant ".to_string();
+        let s2: String = String::from("static ");
+
+        let new_str = "None ";
+        s1.push_str(new_str);
+        println!("{:?}", s1);
+        println!("{:?}", new_str);
+
+        let s3 = s1 + &s2;
+
+        for bytes in s3.bytes() {
+            print!("{} ", bytes);
+        }
+
+        for ch in s3.chars() {
+            print!("{}", ch);
+        }
+
+        let s5 = &new_str[0..2];
+        println!("\n{}", s5);
+    }
+}
+
 mod VecTest {
     pub fn test_vec() {
         // Vector
@@ -30,27 +64,20 @@ mod HashMapTest {
         hash.insert("key3", 3);
 
         let mut op1 = hash.entry("key3");
-        let mut op2 = hash.entry("key4");
+
+        println!("{:?}", op1);
 
         for (k, v) in hash {
             println!("key: {}, value: {}", k, v);
         }
-    }
-}
 
-mod FileTest {
-    use std::fs::File;
-
-    pub fn test_open_file() {
-        let file = File::open("hello.txt");
-        match file {
-            Ok(file) => {
-                println!("打开文件成功！");
-            }
-            Err(err) => {
-                panic!("打开文件失败：{}", err);
-            }
+        let text = "hello world wonderful world";
+        let mut map = HashMap::new();
+        for word in text.split_whitespace() {
+            let p = map.entry(word).or_insert(0);
+            *p += 1;
         }
+        println!("{:#?}", map);
     }
 }
 
@@ -59,5 +86,5 @@ fn main() {
 
     HashMapTest::test_hashmap();
 
-    FileTest::test_open_file();
+    StringTest::test_string();
 }
