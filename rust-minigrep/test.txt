@@ -1,0 +1,11 @@
+cargo run arg1 arg2
+   Compiling rust-minigrep v0.1.0 (/Users/unistart/Code/study/rust-study/rust-minigrep)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.24s
+     Running `target/debug/rust-minigrep arg1 arg2`
+file not found
+["target/debug/rust-minigrep", "arg1", "arg2"]
+abc
+as123213
+asdasdas
+213123sadas
+sadasd
