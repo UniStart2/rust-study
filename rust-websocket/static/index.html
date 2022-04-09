@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rust Websocket</title>
+
+  <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+</head>
+
+<body>
+  <input id="input_msg" type="text" maxlength="50">
+  <button onclick="sendMsg()">发送</button>
+
+  <ul>通讯内容</ul>
+</body>
+
+<script>
+  function sendMsg() {
+    let inputMsg = $("#input_msg").val();
+
+    $.get("http://127.0.0.1:7070/ws",
+      inputMsg,
+      function (data, textStatus, jqXHR) {
+        console.log(data);
+      },
+    );
+  }
+</script>
+
+</html>
