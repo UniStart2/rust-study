@@ -52,6 +52,9 @@ mod serialize_yaml {
 }
 
 use serialize_yaml::{Address, User};
+use std::sync::Arc;
+use std::sync::Mutex;
+
 fn main() {
     let user = User {
         uid: 100,
