@@ -1,52 +1,52 @@
-mod Allocator {
-    use std::alloc::{GlobalAlloc, Layout, System};
+// mod Allocator {
+//     use std::alloc::{GlobalAlloc, Layout, System};
 
-    struct MyAllocator;
+//     struct MyAllocator;
 
-    unsafe impl GlobalAlloc for MyAllocator {
-        unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-            let data = System.alloc(layout);
-            eprintln!("ALLOC: {:p}, size {}", data, layout.size());
-            data
-        }
+//     unsafe impl GlobalAlloc for MyAllocator {
+//         unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+//             let data = System.alloc(layout);
+//             eprintln!("ALLOC: {:p}, size {}", data, layout.size());
+//             data
+//         }
 
-        unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-            System.dealloc(ptr, layout);
-            eprintln!("FREE: {:p}, size {}", ptr, layout.size());
-        }
-    }
+//         unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+//             System.dealloc(ptr, layout);
+//             eprintln!("FREE: {:p}, size {}", ptr, layout.size());
+//         }
+//     }
 
-    // 使用自定义的全局内存分配器
-    #[global_allocator]
-    static GLOBAL: MyAllocator = MyAllocator;
+//     // 使用自定义的全局内存分配器
+//     #[global_allocator]
+//     static GLOBAL: MyAllocator = MyAllocator;
 
-    #[allow(dead_code)]
-    pub struct Matrix {
-        // 使用不规则的数字如 505 可以让 dbg! 的打印很容易分辨出来
-        data: [u8; 505],
-    }
-    impl Default for Matrix {
-        fn default() -> Self {
-            Self { data: [0; 505] }
-        }
-    }
+//     #[allow(dead_code)]
+//     pub struct Matrix {
+//         // 使用不规则的数字如 505 可以让 dbg! 的打印很容易分辨出来
+//         data: [u8; 505],
+//     }
+//     impl Default for Matrix {
+//         fn default() -> Self {
+//             Self { data: [0; 505] }
+//         }
+//     }
 
-    #[test]
-    fn test() {
-        // 在这句执行之前已经有好多内存分配
-        let data = Box::new(Matrix::default());
+//     #[test]
+//     fn test() {
+//         // 在这句执行之前已经有好多内存分配
+//         let data = Box::new(Matrix::default());
 
-        // 输出中有一个 1024 大小的内存分配，是 println! 导致的
-        println!(
-            "!!! allocated memory: {:p}, len: {}",
-            &*data,
-            std::mem::size_of::<Matrix>()
-        );
+//         // 输出中有一个 1024 大小的内存分配，是 println! 导致的
+//         println!(
+//             "!!! allocated memory: {:p}, len: {}",
+//             &*data,
+//             std::mem::size_of::<Matrix>()
+//         );
 
-        // data 在这里 drop，可以在打印中看到 FREE
-        // 之后还有很多其它内存被释放}
-    }
-}
+//         // data 在这里 drop，可以在打印中看到 FREE
+//         // 之后还有很多其它内存被释放}
+//     }
+// }
 
 mod json_serialize {
 
@@ -177,6 +177,80 @@ mod my_string {
         // MyString 可以使用一切 &str 接口，感谢 Rust 的自动 Deref
         assert!(s1.ends_with("world"));
         assert!(s2.starts_with("这"));
+    }
+}
+
+#[cfg(test)]
+mod box_test {
+    use std::{fmt::Display, ops::Deref};
+
+    #[test]
+    fn test() {
+        // Box<T> 是一个只能指向堆数据的智能指针
+        let b = Box::new(5);
+        println!("b: {}", b);
+
+        use List::{Cons, Nil};
+        let n = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
+    }
+
+    enum List {
+        Cons(i32, Box<List>),
+        Nil,
+    }
+
+    #[derive(Debug)]
+    struct MyBox<T>(T);
+
+    impl<T> MyBox<T> {
+        fn new(s: T) -> MyBox<T> {
+            MyBox(s)
+        }
+    }
+
+    impl<T> Deref for MyBox<T> {
+        type Target = T;
+
+        fn deref(&self) -> &Self::Target {
+            &self.0
+        }
+    }
+
+    impl<T> Drop for MyBox<T> {
+        fn drop(&mut self) {
+            // println!("drop: {:?}", self);
+            std::mem::drop(self);
+        }
+    }
+
+    #[test]
+    fn test2() {
+        let a = 2;
+        let b = MyBox::new(a);
+
+        assert_eq!(a, *b);
+    }
+}
+
+#[cfg(test)]
+mod rc_test {
+    // Rc只能够在单线程的情况下使用
+    use std::rc::Rc;
+
+    enum RcList {
+        Nil,
+        Next(i32, Rc<RcList>),
+    }
+
+    #[test]
+    fn test() {
+        use crate::rc_test::RcList::{Next, Nil};
+        let list_c = Rc::new(Next(3, Rc::new(Next(4, Rc::new(Nil)))));
+
+        let list_a = Rc::new(Next(1, Rc::clone(&list_c)));
+        let list_b = Rc::new(Next(2, Rc::clone(&list_c)));
+
+        println!("stronge reference: {}", Rc::strong_count(&list_c));
     }
 }
 
