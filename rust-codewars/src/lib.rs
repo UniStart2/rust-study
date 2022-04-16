@@ -37,7 +37,7 @@ mod credit_card_mask {
     }
 }
 
-///
+/// find_next_square
 mod next_square {
 
     fn find_next_square(sq: u64) -> Option<u64> {
@@ -63,5 +63,62 @@ mod next_square {
             assert_eq!(find_next_square(155), None);
             assert_eq!(find_next_square(342_786_627), None);
         }
+    }
+}
+
+/// Bouncing Balls
+/// A child is playing with a ball on the nth floor of a tall building.
+///  The height of this floor, h, is known.
+/// He drops the ball out of the window.
+/// The ball bounces (for example), to two-thirds of its height (a bounce of 0.66).
+/// His mother looks out of a window 1.5 meters from the ground.
+/// How many times will the mother see the ball pass in front of her window
+/// (including when it's falling and bouncing?
+///
+/// Three conditions must be met for a valid experiment:
+///  Float parameter "h" in meters must be greater than 0
+///  Float parameter "bounce" must be greater than 0 and less than 1
+///  Float parameter "window" must be less than h.
+/// If all three conditions above are fulfilled, return a positive integer,
+///  otherwise return -1.
+///
+/// Note:
+/// The ball can only be seen if the height of the rebounding ball is strictly greater than the window parameter.
+mod bounce_ball {
+    fn bouncing_ball(h: f64, bounce: f64, window: f64) -> i32 {
+        if h > 0f64 && bounce > 0f64 && bounce < 1f64 && window < h {
+            let mut tmp = h;
+            let mut count = 0; // 统计小球可以反弹次数
+            loop {
+                tmp *= bounce;
+
+                if tmp <= window {
+                    break;
+                }
+                count += 1;
+            }
+
+            return count * 2 + 1;
+        }
+
+        -1
+    }
+
+    #[test]
+    fn test() {
+        println!("{}", bouncing_ball(1.0, 0.6, 0.6));
+    }
+
+    fn testequal(h: f64, bounce: f64, window: f64, exp: i32) -> () {
+        assert_eq!(bouncing_ball(h, bounce, window), exp)
+    }
+
+    #[test]
+    fn tests_bouncing_ball() {
+        testequal(3.0, 0.66, 1.5, 3);
+        testequal(30.0, 0.66, 1.5, 15);
+        testequal(40.0, 0.4, 10.0, 3);
+        testequal(10.0, 0.6, 10.0, -1);
+        testequal(3.0, 0.1, 1.5, 1);
     }
 }
