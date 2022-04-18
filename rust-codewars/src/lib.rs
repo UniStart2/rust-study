@@ -122,3 +122,27 @@ mod bounce_ball {
         testequal(3.0, 0.1, 1.5, 1);
     }
 }
+
+/// Find Multiples of a Number
+mod find_multiples_of_a_number {
+    fn find_multiples(n: u32, limit: u32) -> Vec<u32> {
+        // let mut vec: Vec<u32> = vec![n];
+        // let mut i = 2;
+        // while n * i <= limit {
+        //     vec.insert((i - 1) as usize, n * i);
+        //     i = i + 1;
+        // }
+        // vec
+
+        (n..limit).step_by((n) as usize).collect()
+    }
+
+    #[test]
+    fn basic_test() {
+        assert_eq!(find_multiples(1, 2), [1, 2]);
+        assert_eq!(find_multiples(5, 7), [5]);
+        assert_eq!(find_multiples(4, 27), [4, 8, 12, 16, 20, 24]);
+        assert_eq!(find_multiples(11, 54), [11, 22, 33, 44]);
+        assert_eq!(find_multiples(5, 25), [5, 10, 15, 20, 25]);
+    }
+}
