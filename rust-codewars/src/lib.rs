@@ -146,3 +146,98 @@ mod find_multiples_of_a_number {
         assert_eq!(find_multiples(5, 25), [5, 10, 15, 20, 25]);
     }
 }
+
+/// Categorize New Member
+mod categorize_new_member {
+    use std::collections::btree_map::IterMut;
+
+    fn open_or_senior(data: Vec<(i32, i32)>) -> Vec<String> {
+        let mut vec = vec![];
+
+        for i in 0..data.len() {
+            let (age, handicap) = data.get(i).unwrap();
+            if *age >= 55 && *handicap > 7 {
+                vec.insert(i, "Senior".to_string());
+            } else {
+                vec.insert(i, "Open".to_string());
+            }
+        }
+
+        vec
+    }
+
+    #[test]
+    fn returns_expected() {
+        assert_eq!(
+            open_or_senior(vec![(45, 12), (55, 21), (19, -2), (104, 20)]),
+            vec!["Open", "Senior", "Open", "Senior"]
+        );
+        assert_eq!(
+            open_or_senior(vec![(3, 12), (55, 1), (91, -2), (54, 23)]),
+            vec!["Open", "Open", "Open", "Open"]
+        );
+    }
+}
+
+mod cubes_number {
+    use regex::Regex;
+
+    fn is_sum_of_cubes(s: &str) -> String {
+        let is_cubes_number = |n: &u64| -> bool {
+            let mut num = *n;
+            let mut sum = 0;
+
+            while (num > 0) {
+                sum += (num % 10).pow(3);
+                num /= 10;
+            }
+
+            sum == *n
+        };
+
+        let digital_cubes = Regex::new(r"\d{1,3}")
+            .unwrap()
+            .find_iter(s)
+            .filter_map(|m| m.as_str().parse::<u64>().ok().filter(is_cubes_number))
+            .collect::<Vec<_>>();
+
+        if digital_cubes.is_empty() {
+            return String::from("Unlucky");
+        }
+
+        format!(
+            "{} {} Lucky",
+            digital_cubes
+                .iter()
+                .map(|iter| { iter.to_string() })
+                .collect::<Vec<_>>()
+                .join(" "),
+            digital_cubes.iter().sum::<u64>(),
+        )
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        fn dotest(s: &str, exp: &str) -> () {
+            println!("s: {:?};", s);
+            let ans = is_sum_of_cubes(s);
+            println!("actual:\n{:?};", ans);
+            println!("expect:\n{:?};", exp);
+            println!("{};", ans == exp);
+            assert_eq!(ans, exp);
+            println!("{};", "-");
+        }
+
+        #[test]
+        fn basic_tests() {
+            dotest("00 9026315 -827&()", "0 0 Lucky");
+            dotest("0 9026315 -827&()", "0 0 Lucky");
+            dotest(
+                "Once upon a midnight dreary, while100 I pondered, 9026315weak and weary -827&()",
+                "Unlucky",
+            );
+        }
+    }
+}
