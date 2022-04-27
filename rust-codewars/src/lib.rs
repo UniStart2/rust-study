@@ -149,7 +149,6 @@ mod find_multiples_of_a_number {
 
 /// Categorize New Member
 mod categorize_new_member {
-    use std::collections::btree_map::IterMut;
 
     fn open_or_senior(data: Vec<(i32, i32)>) -> Vec<String> {
         let mut vec = vec![];
@@ -238,6 +237,40 @@ mod cubes_number {
                 "Once upon a midnight dreary, while100 I pondered, 9026315weak and weary -827&()",
                 "Unlucky",
             );
+        }
+    }
+}
+
+mod sort_numbers {
+    use std::vec;
+
+    fn sort_numbers(arr: &Vec<i32>) -> Vec<i32> {
+        if arr.len() == 0 {
+            return Vec::new();
+        }
+
+        let mut vec = arr.clone();
+        vec.sort();
+
+        vec
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test() {
+            sort_numbers(&vec![1, 3, 5, 2, 10]);
+        }
+
+        #[test]
+        fn sample_tests() {
+            assert_eq!(sort_numbers(&vec![1, 2, 3, 10, 5]), vec![1, 2, 3, 5, 10]);
+            assert_eq!(sort_numbers(&vec![]), vec![]);
+            assert_eq!(sort_numbers(&vec![20, 2, 10]), vec![2, 10, 20]);
+            assert_eq!(sort_numbers(&vec![2, 20, 10]), vec![2, 10, 20]);
+            assert_eq!(sort_numbers(&vec![2, 10, 20]), vec![2, 10, 20]);
         }
     }
 }
