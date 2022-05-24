@@ -274,3 +274,165 @@ mod sort_numbers {
         }
     }
 }
+
+mod split_strings {
+    fn solution(s: &str) -> Vec<String> {
+        let mut vec: Vec<String> = Vec::new();
+
+        let mut cnt = 0;
+        let mut tmp = String::from("");
+        for item in s.char_indices() {
+            let (pos, ch) = item;
+
+            tmp.push(ch);
+            cnt += 1;
+
+            if pos == s.len() - 1 && pos % 2 == 0 {
+                tmp.push('_');
+                cnt += 1;
+            }
+
+            if cnt == 2 {
+                vec.push(tmp.clone());
+                tmp.clear();
+                cnt = 0;
+            }
+        }
+
+        vec
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn basic() {
+            solution("dasdas");
+
+            // assert_eq!(solution("abcdef"), ["ab", "cd", "ef"]);
+            // assert_eq!(solution("abcdefg"), ["ab", "cd", "ef", "g_"]);
+            // assert_eq!(solution(""), [] as [&str; 0]);
+        }
+    }
+}
+
+mod find_the_parity_outlier {
+    fn find_outlier(values: &[i32]) -> i32 {
+        // let mut tmp = 0;
+        // for i in 0..values.len() - 1 {
+        //     tmp = values[i] ^ values[i + 1];
+        //     if tmp % 2 != 0 {
+        //         // if tmp is odd integer
+        //         let mut tmp2 = 0;
+        //         if i == 0 {
+        //             tmp2 = values[i] ^ values[i + 2];
+        //         } else if i == values.len() - 2 {
+        //             tmp2 = values[i] ^ values[i - 1];
+        //         }
+
+        //         if tmp2 % 2 != 0 {
+        //             return values[i];
+        //         } else {
+        //             return values[i + 1];
+        //         }
+        //     }
+        // }
+
+        // values[values.len() - 1]
+
+        match values {
+            [a, b, c, ..] => {
+                let r = if a & 1 == b & 1 { a & 1 } else { c & 1 };
+                *values.iter().find(|&x| x & 1 != r).unwrap()
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn basic_test() {
+            let t1 = [2, 6, 8, -10, 3];
+            let t2 = [
+                206847684, 1056521, 7, 17, 1901, 21104421, 7, 1, 35521, 1, 7781,
+            ];
+            let t3 = [std::i32::MAX, 0, 1];
+            assert_eq!(3, find_outlier(&t1));
+            assert_eq!(206847684, find_outlier(&t2));
+            assert_eq!(0, find_outlier(&t3));
+        }
+    }
+}
+
+/// Implement a function that receives two IPv4 addresses,
+/// and returns the number of addresses between them
+/// (including the first one, excluding the last one).
+/// Examples
+/// * With input "10.0.0.0", "10.0.0.50"  => return   50
+/// * With input "10.0.0.0", "10.0.1.0"   => return  256
+/// * With input "20.0.0.10", "20.0.1.0"  => return  246
+mod count_ip_address {
+    fn ips_between(start: &str, end: &str) -> u32 {
+        let mut ips_sum: i64 = 0;
+
+        let start_vec: Vec<_> = split_ip(&start);
+        let end_vec: Vec<_> = split_ip(&end);
+
+        for i in 0..4 {
+            let tmp = *(&end_vec[i]) - *(&start_vec[i]);
+
+            if tmp == 0 {
+                continue;
+            }
+
+            let expr = 3 - u32::try_from(i).unwrap();
+            ips_sum += tmp * 256_i64.pow(expr);
+        }
+
+        //println!("ips_sum:{}", ips_sum);
+        u32::try_from(ips_sum).unwrap()
+    }
+
+    fn split_ip(ip: &str) -> Vec<i64> {
+        ip.split('.')
+            .into_iter()
+            .map(|x| x.parse::<i64>().unwrap())
+            .collect()
+    }
+
+    // ============= 其他方法 ==============
+    use std::net::Ipv4Addr;
+    fn ips_between2(start: &str, end: &str) -> u32 {
+        let start: u32 = start.parse::<Ipv4Addr>().unwrap().into();
+        let end: u32 = end.parse::<Ipv4Addr>().unwrap().into();
+        end - start
+    }
+
+    fn ips_between3(start: &str, end: &str) -> u32 {
+        println!("{:?}", ip_to_u32(end));
+        println!("{:?}", ip_to_u32(start));
+        ip_to_u32(end) - ip_to_u32(start)
+    }
+
+    fn ip_to_u32(ip: &str) -> u32 {
+        ip.split('.')
+            .map(|s| s.parse::<u8>().unwrap())
+            .fold(0, |acc, byte| (acc << 8) + byte as u32)
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn basic() {
+            assert_eq!(ips_between3("10.0.0.0", "10.0.0.50"), 50);
+            assert_eq!(ips_between3("20.0.0.10", "20.0.1.0"), 246);
+            assert_eq!(ips_between3("0.0.0.0", "255.0.0.1"), 4278190081);
+        }
+    }
+}

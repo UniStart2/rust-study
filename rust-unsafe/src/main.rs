@@ -6,8 +6,8 @@
 /// unsafe并没有关闭借用检查或停用其他安全检查
 
 mod unsafe_test {
-    pub extern "C" fn func() {
-        println!("call Rust function pass by C");
+    extern "C" {
+        fn abs(input: i32) -> i32;
     }
 
     pub unsafe trait UnsafeMyTrait {
@@ -40,6 +40,8 @@ mod unsafe_test {
                 "ptr3 addr: {:p}, ptr3: {:p}, ref value: {}",
                 &ptr3, ptr3, *ptr3
             );
+
+            println!("Absolute value of -3 according to C: {}", abs(3));
         }
     }
 }
